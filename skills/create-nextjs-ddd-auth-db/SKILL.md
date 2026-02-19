@@ -1,11 +1,11 @@
 ---
 name: create-nextjs-ddd-auth-db
-description: Create a new Next.js application with App Router API endpoints, frontend pages, DDD structure, database integration, Google authentication with better-auth, Jest tests, and ESLint. Use this skill when the user asks to create a new Next.js project or application.
+description: Create a new fullstack Next.js. Use this skill when the user asks to create a new Next.js project or application.
 ---
 
 # Objective
 
-Create a brand new Next.js app that satisfies all requested architecture and feature requirements. Keep the skill itself code-free: generate application code only inside the user-selected target folder.
+Create a brand new Next.js app that satisfies all requested architecture and feature requirements. It includes App Router API endpoints, frontend pages, DDD structure, database integration, Google authentication with better-auth, tests, and linter. Keep the skill itself code-free: generate application code only inside the user-selected target folder.
 
 # Required Workflow
 
@@ -18,13 +18,12 @@ Ask the user:
 1. App name
 2. Folder where the new app should be created
 3. Database to use
-4. Library to manage that database
-
-When the user is unsure about the library, propose:
-
+4. Library to manage that database. When the user is unsure about the library, propose:
 - MongoDB: `mongoose`
 - DynamoDB: `dynamoose`
 - SQL dialects: `prisma`
+5. Whether Jest or Vitest should be used as testing library
+6. Whether ESLint or Oxlint should be used as linting library
 
 Confirm the final choices before continuing.
 
@@ -40,6 +39,7 @@ The plan must include:
 - Tactical DDD folder setup
 - Feature implementation
 - Tests
+- Linting setup, and Typescript configured in strict mode
 - Documentation updates
 - Final validation
 
@@ -50,9 +50,9 @@ Before any installation, verify latest stable versions and usage from official s
 - Next.js docs: [https://nextjs.org/docs](https://nextjs.org/docs)
 - Next.js installation guide: [https://nextjs.org/docs/app/getting-started/installation](https://nextjs.org/docs/app/getting-started/installation)
 - better-auth docs
-- Jest docs
-- ESLint docs
 - Chosen database library docs
+- Chosen testing library docs (Jest or Vitest)
+- Chosen linter library docs (ESLint or Oxlint)
 
 Use the latest stable versions available at execution time. Do not assume versions from memory.
 
@@ -63,8 +63,8 @@ Create the app in the chosen folder with the chosen name and latest Next.js setu
 Install and configure:
 
 - `better-auth` (Google Auth)
-- `jest`
-- `eslint`
+- Selected testing library
+- Selected linter library
 - Selected database library and required driver packages
 
 ## 5) Implement Required Tactical DDD Structure
