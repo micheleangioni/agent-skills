@@ -6,7 +6,7 @@ A collection of skills for AI coding agents.
 
 Agent Skills are specialized capabilities that extend the functionality of AI coding agents like Claude Code. They enable agents to perform complex, domain-specific tasks through well-defined prompts and workflows.
 
-Learn more at [agentskills.io](https://agentskills.io/)
+Learn more at [agentskills.io](https://agentskills.io/).
 
 ## Available Skills
 
@@ -20,12 +20,14 @@ A comprehensive skill for auditing codebases, identifying potential issues, secu
 npx skills add https://github.com/micheleangioni/agent-skills --skill codebase-auditor
 ```
 
-## Installation
+### create-nextjs-ddd-auth-db
 
-To install a skill from this repository, use:
+A skill to create a complete Next.js application with DDD structure, API endpoints, frontend pages, database integration, Google auth via better-auth, Jest tests, and ESLint. The last available version will be used for all packages.
+
+**Installation:**
 
 ```bash
-npx skills add https://github.com/micheleangioni/agent-skills --skill <skill-name>
+npx skills add https://github.com/micheleangioni/agent-skills --skill create-nextjs-ddd-auth-db
 ```
 
 ## Removal
