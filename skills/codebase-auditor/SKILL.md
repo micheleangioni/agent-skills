@@ -1,6 +1,6 @@
 ---
 name: codebase-auditor
-description: Analyze and audit codebases to identify issues, suggest improvements, and ensure best practices. Use this skill when the user asks for a review, audit, evaluation or analysis of a codebase, including identifying bugs, security vulnerabilities, performance bottlenecks, or code quality concerns.
+description: Use this skill when the user asks for a review, audit, evaluation or analysis of a codebase, to identify bugs, security vulnerabilities, performance bottlenecks, or code quality concerns.
 license: MIT
 ---
 
