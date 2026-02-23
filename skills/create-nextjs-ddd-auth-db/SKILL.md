@@ -98,7 +98,7 @@ Implement all of the following:
 Create:
 
 - `.env.example` with every required variable (app URL, auth values, Google OAuth credentials, DB settings, and anything else needed)
-- `docs/endpoints.md` listing available endpoints with method, path, purpose, and auth requirements
+- `docs/endpoints.yaml` listing available endpoints with method, path, purpose, and auth requirements in OpenAPI format
 
 Update the app's `README.md` with setup, environment, run, test, lint, and endpoint usage instructions.
 
