@@ -36,6 +36,11 @@ The plan must include:
 - Discovery confirmation
 - Version research and documentation review
 - Scaffolding
+- `instrumentation.ts` file setup to:
+  - Log the node version, next.js version and NODE_ENV variable at startup
+  - To validate the environment variables and log any critical missing ones at startup
+  - To initializate the database connection and log success or failure
+  - To log the server startup completion
 - Tactical DDD folder setup
 - Feature implementation
 - Tests
