@@ -106,6 +106,7 @@ interface DomainEventInterface {
 }
 ```
 - Example `User` entity in domain layer extending `BaseEntity`
+- At least one concrete sample domain event implementation for the sample domain (for example, a `User`-related event) so the event catalog is not empty
 - `User` repository abstraction + implementation
 - Application service for user retrieval
 - `GET /users` endpoint in App Router under `src/app/api`, with `limit` and `offset` query parameters, returning paginated users
@@ -118,9 +119,16 @@ Create:
 
 - `.env.example` with every required variable (app URL, auth values, Google OAuth credentials, DB settings, and anything else needed)
 - `docs/endpoints.yaml` listing available endpoints with method, path, purpose, and auth requirements in OpenAPI format
-- `docs/event-catalog.md` documenting emitted domain events with their aggregate, name, and data structure
+- `docs/asyncapi.yaml` as the event catalog source of truth, using a valid AsyncAPI document that describes emitted domain events only
+- The AsyncAPI document must be transport-agnostic by default unless the user explicitly asks for messaging infrastructure details
+- The AsyncAPI document must include:
+  - Document metadata including `asyncapi` and `info` with basic title and version
+  - One logical channel per emitted domain event
+  - One message per event with payload schema
+  - Reusable schemas under `components` when payload structures are shared
+- Event payload schemas must document the domain event aggregate, event name, and event data structure
 
-Update the app's `README.md` with setup, environment, run, test, lint, and endpoint usage instructions.
+Update the app's `README.md` with setup, environment, run, test, lint, endpoint usage instructions, and where `docs/asyncapi.yaml` lives and how it should be used as the event catalog.
 
 ## 8) Validate and Iterate Until Complete
 
@@ -132,6 +140,7 @@ Verify:
 - Homepage renders and auth button is present
 - `/users` endpoint works
 - Required structure and docs exist
+- `docs/asyncapi.yaml` exists and documents the emitted events implemented in code
 
 If any requirement is unmet, iterate until complete.
 
