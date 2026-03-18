@@ -1,6 +1,6 @@
 ---
 name: codebase-auditor
-description: Use this skill when the user asks for a review, audit, evaluation or analysis of a codebase, to identify bugs, security vulnerabilities, performance bottlenecks, or code quality concerns.
+description: Use this skill when the user asks for a review, audit, evaluation or analysis of a codebase, to identify bugs, security vulnerabilities, outdated dependencies or runtimes, performance bottlenecks, or code quality concerns.
 license: MIT
 ---
 
@@ -19,6 +19,14 @@ below. Base all observations only on what is visible in the repository.
 If something is **missing or not clearly implemented**, say so explicitly
 instead of guessing.
 
+Distinguish carefully between:
+- `Observed`: directly visible in files, configuration, tests, or command output.
+- `Inferred`: a reasoned conclusion drawn from visible evidence.
+- `Not verifiable from repo`: cannot be confirmed from the repository contents or available command output.
+
+Do not present inferences as direct facts. If a category or pattern is
+not meaningfully applicable to the repository type, say so explicitly.
+
 --------------------------------------------------------
 
 ## Evaluation Criteria
@@ -35,7 +43,11 @@ instead of guessing.
 - Evaluate domain language clarity and cohesion.
 - If no explicit DDD patterns are used, explain how domain logic is
   organized instead.
-- **Provide a rating from 0 to 10.**
+- If the repository type makes DDD analysis not meaningfully applicable
+  (for example, a thin frontend-only app, CLI utility, or small library
+  with no domain model), use `Rating (0-10): N/A` and provide a
+  one-sentence rationale.
+- Otherwise, **provide a rating from 0 to 10.**
 
 ### 2. Event-Driven Architecture (EDA)
 
@@ -46,7 +58,9 @@ instead of guessing.
   strategies, and delivery guarantees (if visible).
 - Assess how well the event flow reflects domain behavior.
 - If events or messaging are not used, state that clearly.
-- **Provide a rating from 0 to 10.**
+- If the repository type makes EDA analysis not meaningfully applicable,
+  use `Rating (0-10): N/A` and provide a one-sentence rationale.
+- Otherwise, **provide a rating from 0 to 10.**
 
 ### 3. Database & Data Modeling
 
@@ -60,7 +74,68 @@ instead of guessing.
   from the code.
 - **Provide a rating from 0 to 10.**
 
-### 4. Code Cleanliness & Design Patterns
+### 4. Security
+
+- Evaluate authentication, authorization, privilege boundaries, and
+  insecure defaults if those concerns are relevant to the repository.
+- Identify secret-handling problems, hardcoded credentials, unsafe token
+  storage, weak configuration defaults, and missing security-relevant
+  validation.
+- Look for injection risks, unsafe deserialization, SSRF, unsafe file or
+  process access, path traversal, XSS/CSRF exposure, and dependency or
+  supply-chain risks when visible.
+- Assess whether sensitive operations are logged, audited, rate-limited,
+  or otherwise protected, if visible.
+- If a security property cannot be confirmed from the repository, state
+  that explicitly instead of guessing.
+- **Provide a rating from 0 to 10.**
+
+### 5. Dependency & Runtime Currency
+
+- Scope this category narrowly. Do **not** attempt exhaustive review of
+  every lockfile entry, every direct dependency, or any transitive
+  dependency graph.
+- Always assess the main language runtime if it is identifiable from the
+  repository.
+- Assess the primary framework if one is present.
+- Assess the main authentication library if one is present.
+- Assess up to **2** architecturally central SDKs or integrations that
+  are clearly important from manifests, imports, configuration, or
+  documentation.
+- Prefer components that materially affect architecture, security, or
+  operability. If more than 2 SDKs or integrations look important, pick
+  the 2 most central and state that the review is intentionally scoped.
+- Determine the installed version from repository evidence when
+  possible.
+- Research the latest available stable version and current
+  support/deprecation/end-of-life status online for each selected
+  component.
+- Prefer primary sources for online verification: official
+  documentation, vendor support policies, package registry pages,
+  official GitHub releases, or official release notes.
+- If the installed version cannot be confirmed from the repository, mark
+  that claim as `Not verifiable from repo`.
+- If the latest stable version or support status cannot be confirmed
+  from authoritative sources, say that explicitly and do not guess.
+- **Provide a rating from 0 to 10.**
+
+### 6. Performance & Scalability
+
+- Identify potential performance bottlenecks in data access,
+  application logic, APIs, background jobs, and event processing.
+- Look for N+1 queries, repeated database round-trips, missing indexes,
+  full-table scans, excessive joins, unbounded pagination, inefficient
+  filtering/sorting, or avoidable over-fetching.
+- Evaluate caching strategy, batching, lazy/eager loading choices, and
+  whether expensive work is done synchronously on hot paths.
+- Check for chatty service boundaries, repeated filesystem/network
+  calls, large payloads, memory-heavy processing, or unnecessary
+  serialization/deserialization.
+- If performance-sensitive areas are not visible or cannot be inferred
+  from the codebase, say so explicitly.
+- **Provide a rating from 0 to 10.**
+
+### 7. Code Cleanliness & Design Patterns
 
 - Evaluate structure, readability, maintainability, and naming.
 - Identify usage of patterns (Repository, CQRS, Adapter, Factory,
@@ -70,7 +145,7 @@ instead of guessing.
   responsibilities.
 - **Provide a rating from 0 to 10.**
 
-### 5. Testability & Testing Approach
+### 8. Testability & Testing Approach
 
 - Assess testability of the components and boundaries.
 - Identify unnecessary infrastructure coupling, missing abstractions,
@@ -79,16 +154,18 @@ instead of guessing.
 - If tests are missing or minimal, call this out explicitly.
 - **Provide a rating from 0 to 10.**
 
-### 6. Bug Risks & Robustness
+### 9. Bug Risks & Robustness
 
 - Identify potential bug sources: missing validation, concurrency
-  issues, transaction boundaries, input handling, error flows.
-- Spot performance pitfalls (N+1 queries, heavy joins, lack of
-  throttling, event buildup).
-- Evaluate defensive programming and failure behavior.
+  issues, transaction boundaries, input handling, authorization
+  mistakes, null handling, and error flows.
+- Evaluate defensive programming, rollback behavior, retries, timeouts,
+  circuit breaking, and failure handling.
+- Call out fragile assumptions, unsafe defaults, or places where the
+  system may fail silently.
 - **Provide a rating from 0 to 10.**
 
-### 7. Documentation & Discoverability
+### 10. Documentation & Discoverability
 
 - Evaluate README, comments, architecture notes, diagrams, or
   glossaries.
@@ -100,18 +177,23 @@ instead of guessing.
 
 --------------------------------------------------------
 
-## Repository Scope & Sampling
+## Repository Coverage
 
-- If the repository is very large, focus on a **representative subset**
-  of services/modules and clearly state which parts you reviewed.
-- Show a **brief overview of key areas**:
-  - Root structure (apps, libs, tools)
-  - Database schema / migrations: **{{list DB folders/files}}**
-  - Domain layer / core logic: **{{list domain folders}}**
-  - Application / modules / APIs / services: **{{list app/service folders}}**
-  - Event system / messaging / streaming: **{{list event-related folders}}**
-  - Tests: **{{list test folders}}**
-- Include any additional files that are relevant, even if not listed.
+- Review the entire repository, not a representative subset.
+- Inspect all first-party source code, configuration, infrastructure, schema, migration, test, and documentation files that materially affect system behavior or maintainability.
+- Do not deeply review vendored dependencies, generated files, lockfiles, or build outputs unless they reveal a concrete risk, compatibility issue, or maintenance concern.
+- When presenting findings, make clear which parts of the repository were inspected, distinguish `Observed` from `Inferred`, and call out any areas that were excluded with the reason for exclusion.
+
+Show a **brief overview of key areas** by listing the actual repo-relative paths you found:
+- Root structure: list the main top-level directories and important root files
+- Database schema / migrations: list the concrete schema, migration, ORM, or SQL paths you found, or write `None found`
+- Domain layer / core logic: list the concrete domain, core, model, entity, or business-logic paths you found, or write `None found`
+- Application / modules / APIs / services: list the concrete app, module, route, controller, handler, or service paths you found, or write `None found`
+- Event system / messaging / streaming: list the concrete event, queue, consumer, producer, stream, or outbox paths you found, or write `None found`
+- Tests: list the concrete unit, integration, e2e, fixture, or test-helper paths you found, or write `None found`
+
+- Include any additional files that materially affect architecture, quality, security, or operability.
+- Use only files and folders actually present in the repository. Do not invent paths.
 
 --------------------------------------------------------
 
@@ -131,13 +213,39 @@ Short text with:
 - 2–3 main strengths in bulletpoints
 - 2–3 main concerns in bulletpoints
 - Top 3–5 risks (short phrases) in bulletpoints
+- If any category is `N/A`, briefly list it with the reason.
 
-### 2. Detailed Findings by Category
+Prefix substantive bullets in strengths, concerns, and risks with
+`[Observed]`, `[Inferred]`, or `[Not verifiable from repo]`.
 
-For each of the 7 evaluation categories, use this structure:
+### 2. Evidence & Method
+
+Provide a short section before the detailed findings that includes:
+
+- `Commands / tools used`
+  - List the concrete shell commands, tests, linters, scanners, package
+    manager commands, or search tools used during the audit.
+  - For `Dependency & Runtime Currency`, explicitly list the web
+    research method and the primary sources checked for latest-version
+    or support-status verification.
+  - If no executable commands or tools were used, explicitly write
+    `None`.
+- `Evidence tag rules`
+  - `Observed`: directly supported by repository contents or command
+    output.
+  - `Inferred`: a conclusion drawn from visible evidence.
+  - `Not verifiable from repo`: cannot be confirmed from the repository
+    or available command output.
+- `Excluded areas`
+  - List excluded directories, generated artifacts, vendored code, or
+    other skipped areas and briefly explain why they were excluded.
+
+### 3. Detailed Findings by Category
+
+For each of the 10 evaluation categories, use this structure:
 
 1. **Category Name** (e.g. "Domain-Driven Design (DDD)")
-2. `Rating (0–10): X`
+2. `Rating (0-10): X` or `Rating (0-10): N/A`
 3. **Short verdict** (2–3 sentences).
 4. **Key strengths**
    - Bullet list of strengths.
@@ -151,10 +259,27 @@ For each of the 7 evaluation categories, use this structure:
      an outbox table", "split Aggregate X into Y and Z", "add unique
      constraint on columns A, B").
 
-If a category is only partially applicable, explain the limitations and
-how that affected the rating.
+Rules:
+- If the category is rated `N/A`, provide a one-sentence rationale and
+  skip strengths/issues that would be fabricated.
+- Prefix every substantive strength and issue bullet with one of:
+  `[Observed]`, `[Inferred]`, or `[Not verifiable from repo]`.
+- Use `Not verifiable from repo` only when the repository and available
+  command output do not support a stronger claim.
+- For **Dependency & Runtime Currency**, start the category with a
+  compact Markdown table with these columns:
+  `Component | Role | Installed | Latest stable | Status | Evidence`
+- In that table, `Status` should be a short label such as `Current`,
+  `Behind`, `Deprecated`, `EOL`, or `Not verifiable`.
+- In that table, `Evidence` should briefly cite the relevant repository
+  evidence and primary-source version/status evidence.
+- For **Dependency & Runtime Currency**, keep recommendations scoped only
+  to the selected runtime, framework, auth library, and up to 2 central
+  SDKs or integrations.
+- If a category is only partially applicable, explain the limitations
+  and how that affected the rating.
 
-### 3. Prioritized Recommendations
+### 4. Prioritized Recommendations
 
 Provide a **Top 5** list of cross-cutting improvements, ordered by
 priority. For each item:
@@ -164,9 +289,9 @@ priority. For each item:
 - Impact: High / Medium / Low
 - Effort: High / Medium / Low
 
-### 4. Summary Table
+### 5. Summary Table
 
-Provide a Markdown table with the rating for each of the 7 evaluation
+Provide a Markdown table with the rating for each of the 10 evaluation
 categories:
 
 | Category                      | Rating (0–10) | One-line comment                   |
@@ -174,15 +299,26 @@ categories:
 | Domain-Driven Design (DDD)    |               |                                    |
 | Event-Driven Architecture     |               |                                    |
 | Database & Data Modeling      |               |                                    |
+| Security                      |               |                                    |
+| Dependency & Runtime Currency |               |                                    |
+| Performance & Scalability     |               |                                    |
 | Code Cleanliness & Patterns   |               |                                    |
 | Testability & Testing         |               |                                    |
 | Bug Risks & Robustness        |               |                                    |
 | Documentation & Discoverability |             |                                    |
 
-### 5. Final Overall Rating (0–10)
+Add a note below the table stating that `N/A` is allowed only for
+non-applicable categories and that the final score is calculated from
+applicable numeric categories only.
+
+### 6. Final Overall Rating (0–10)
 
 Provide a single **final global quality score** from 0 to 10 and briefly
 justify it.
+
+Compute the final score as the unweighted arithmetic mean of all
+applicable numeric category ratings. Exclude every category marked
+`N/A` from the denominator, and state the denominator you used.
 
 Interpret ratings roughly as:
 
