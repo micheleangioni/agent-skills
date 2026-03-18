@@ -91,10 +91,24 @@ Create the following structure:
 Implement all of the following:
 
 - Database connection under `src/infrastructure`, aligned with the selected database and library
-- Example `User` entity in domain layer
+- A simple logging utility under `src/shared/logger` that can be used across the app
+- The Abstract Entity Class `BaseEntity` with the following methods:
+  - `addDomainEvent(domainEvent: DomainEventInterface)`
+  - `releaseDomainEvents(): DomainEventInterface[]`
+
+where `DomainEventInterface` is:
+
+```
+interface DomainEventInterface {
+  getEventAggregate(): string;
+  getEventName(): string;
+  getEventData(): Record<string, unknown>;
+}
+```
+- Example `User` entity in domain layer extending `BaseEntity`
 - `User` repository abstraction + implementation
 - Application service for user retrieval
-- `GET /users` endpoint in App Router under `src/app/api`
+- `GET /users` endpoint in App Router under `src/app/api`, with `limit` and `offset` query parameters, returning paginated users
 - Homepage page with a Google Auth button powered by better-auth
 - Tests for domain/application/infrastructure/API behavior under `src/__tests__`
 
@@ -104,6 +118,7 @@ Create:
 
 - `.env.example` with every required variable (app URL, auth values, Google OAuth credentials, DB settings, and anything else needed)
 - `docs/endpoints.yaml` listing available endpoints with method, path, purpose, and auth requirements in OpenAPI format
+- `docs/event-catalog.md` documenting emitted domain events with their aggregate, name, and data structure
 
 Update the app's `README.md` with setup, environment, run, test, lint, and endpoint usage instructions.
 
@@ -123,5 +138,4 @@ If any requirement is unmet, iterate until complete.
 # Non-Negotiable Constraints
 
 - Keep all packages on latest stable versions at run time.
-- Do not embed generated app code in the skill itself.
 - Do not stop after scaffolding; continue until all requirements are satisfied and validated.
