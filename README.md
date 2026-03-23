@@ -10,6 +10,18 @@ Learn more at [agentskills.io](https://agentskills.io/).
 
 ## Available Skills
 
+### assess-agent-guidance-files
+
+A thoughtful skill to evaluate a repository’s agent readiness. It scans the repo’s AGENTS.md/CLAUDE.md files, along with any referenced guidance files, and provides an assessment across key areas, with practical recommendations for improvement.
+
+It also produces an overall repository rating for quick evaluation.
+
+**Installation:**
+
+```bash
+npx skills add https://github.com/micheleangioni/agent-skills --skill assess-agent-guidance-files
+```
+
 ### codebase-auditor
 
 A comprehensive skill for auditing codebases, identifying potential issues, security vulnerabilities, and code quality concerns.
