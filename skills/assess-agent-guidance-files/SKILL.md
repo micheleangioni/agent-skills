@@ -166,18 +166,28 @@ Evaluation rules:
 
 ---
 
-### 8. Authentication
+### 8. Security & Authentication
 
-Agent guidance should specify:
+Agent guidance should specify the repository's security-relevant constraints and protections, including authentication when applicable.
 
+This may include:
 - Authentication mechanism (e.g., JWT, OAuth, sessions)
 - Service-to-service authentication (if applicable)
-- Authorization model (if relevant)
+- Authorization model and privilege boundaries
+- Secret handling rules (environment variables, vaults, local overrides, no hardcoded credentials)
+- Restrictions on production data, PII, or regulated data
+- Network/tooling constraints for agents (external calls, shell access, destructive commands)
+- Security-sensitive operational rules (rate limits, audit expectations, approval gates, dependency/update expectations)
+
+Important:
+- Do **not** require a full security policy in AGENTS.md
+- Accept concise guidance plus links to deeper documentation
+- Only require topics that are relevant to the repository
 
 Evaluation rules:
-- PASS: Clearly defined
-- WARN: Partial
-- FAIL: Missing
+- PASS: Security and authentication expectations are clearly defined or referenced
+- WARN: Partially defined, vague, or missing non-critical details
+- FAIL: Missing when the repo clearly involves secrets, sensitive data, production access, privileged operations, external integrations, or user authentication/authorization
 
 ---
 
@@ -214,8 +224,9 @@ Checks:
 7. Docs (API/events)
    - Status: PASS/FAIL
 
-8. Authentication
+8. Security & authentication
    - Status: PASS/WARN/FAIL
+   - Missing: [...]
 
 ---
 
@@ -278,7 +289,7 @@ Do not depend on specific file names.
 | Performance | 10 |
 | Testing | 10 |
 | Docs | 5 |
-| Auth | 5 |
+| Security & auth | 5 |
 
 ### Verdict
 
@@ -293,7 +304,7 @@ Do not depend on specific file names.
 - No root AGENTS.md / CLAUDE.md
 - Any file >200 lines
 - No testing mention
-- No authentication guidance
+- No security/authentication guidance when clearly relevant
 - Monorepo with unclear or missing project coverage
 - Missing API/event documentation when clearly required
 
