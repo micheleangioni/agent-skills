@@ -101,6 +101,9 @@ Examples:
 - Microservices / modular monolith
 - Micro-frontends
 - Layered / clean architecture
+- MVVM / MVI / MVP (mobile)
+- Coordinator / Router pattern (iOS)
+- Clean Architecture (Android / iOS)
 
 Evaluation rules:
 - PASS: Architecture clearly described
@@ -111,13 +114,11 @@ Evaluation rules:
 
 ### 5. Performance Requirements
 
-Agent guidance should include **concrete, testable expectations**, such as:
+Agent guidance should include **concrete, testable expectations**. Examples vary by stack:
 
-- Avoid N+1 queries
-- Pagination requirements
-- Latency targets (e.g., p95)
-- Load-time expectations
-- Resource constraints
+- **Backend:** N+1 query avoidance, pagination rules, latency targets (e.g., p95), rate limits
+- **Frontend:** Bundle size limits, Core Web Vitals targets, rendering performance constraints
+- **Mobile:** App startup time, memory limits, battery impact, offline/connectivity constraints
 
 Evaluation rules:
 - PASS: Specific and actionable
@@ -163,6 +164,7 @@ Important:
 Evaluation rules:
 - PASS: Clearly documented and discoverable
 - FAIL: Missing when APIs or async systems exist
+- N/A: Repository is a pure consumer (FE, mobile, CLI) and owns no APIs — check is skipped and excluded from scoring
 
 ---
 
@@ -178,6 +180,7 @@ This may include:
 - Restrictions on production data, PII, or regulated data
 - Network/tooling constraints for agents (external calls, shell access, destructive commands)
 - Security-sensitive operational rules (rate limits, audit expectations, approval gates, dependency/update expectations)
+- **Mobile-specific:** secure local storage (Keychain on iOS, Keystore on Android), certificate pinning rules, deep link / URL scheme validation, sensitive OS permissions (camera, location, notifications)
 
 Important:
 - Do **not** require a full security policy in AGENTS.md
@@ -187,7 +190,7 @@ Important:
 Evaluation rules:
 - PASS: Security and authentication expectations are clearly defined or referenced
 - WARN: Partially defined, vague, or missing non-critical details
-- FAIL: Missing when the repo clearly involves secrets, sensitive data, production access, privileged operations, external integrations, or user authentication/authorization
+- FAIL: Missing when the repo clearly involves secrets, sensitive data, production access, privileged operations, external integrations, user authentication/authorization, or device-level sensitive data / privileged OS permissions
 
 ---
 
@@ -248,6 +251,10 @@ Check:
 - go.mod, Cargo.toml
 - pom.xml, build.gradle
 - Docker configs
+- pubspec.yaml (Flutter / Dart)
+- build.gradle / *.xcodeproj / Package.swift (Android / iOS native)
+- capacitor.config.* (Capacitor / Ionic)
+- metro.config.* (React Native)
 
 Compare inferred stack with what agent guidance declares.
 
