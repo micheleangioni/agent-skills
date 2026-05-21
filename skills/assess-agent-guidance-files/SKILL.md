@@ -218,47 +218,43 @@ Evaluation rules:
 
 ---
 
-## Evaluation Output Format
+## Required Assessment Artifact
 
-Verdict: PASS | PARTIAL PASS | FAIL  
-Score: X/100  
+At the end of every assessment, create or update this file in the assessed repository root:
 
-Checks:
+```text
+AGENTIC_READINESS_ASSESSMENT.md
+```
 
-1. Root agent file
-   - Found: yes/no
-   - Lines: N
-   - Status: PASS/WARN/FAIL
+Use `references/AGENTIC_READINESS_ASSESSMENT.template.md` as the required structure for the artifact.
 
-2. Monorepo structure
-   - Detected: yes/no
-   - Coverage: adequate/incomplete
-   - Status: PASS/FAIL
+The artifact must include:
 
-3. Tech stack
-   - Status: PASS/WARN/FAIL
-   - Missing: [...]
+- Assessment date in `YYYY-MM-DD` format using the local current date
+- A rating table with columns: `Section`, `Rating`, `Evidence`, `Notes`
+- One table row for each assessment section listed below
+- Ratings limited to `PASS`, `WARN`, `FAIL`, or `N/A`
+- Final assessment rating formatted exactly as `XX/100`
+- 3-5 concise, prioritized recommendations tied to observed gaps
 
-4. Architecture
-   - Status: PASS/WARN/FAIL
+Keep `N/A` sections in the table, but exclude them from score calculation.
+Include root file presence and monorepo coverage evidence in the `Presence & Structure` row.
 
-5. Performance
-   - Status: PASS/WARN/FAIL
+After writing the artifact, report the final score and the path to `AGENTIC_READINESS_ASSESSMENT.md` to the user.
 
-6. Testing
-   - Status: PASS/FAIL
+### Assessment Sections
 
-7. Docs (API/events)
-   - Status: PASS/FAIL
+Use these section names in the table:
 
-8. Security & authentication
-   - Status: PASS/WARN/FAIL
-   - Missing: [...]
-
-9. Feature & business rule docs
-   - Status: PASS/WARN/FAIL/N/A
-   - Missing: [...]
-   - Notes: [...]
+1. Presence & Structure
+2. Length Constraints
+3. Tech Stack Coverage
+4. Architecture Coverage
+5. Performance Requirements
+6. Testing Strategy
+7. Endpoint & Event Documentation
+8. Security & Authentication
+9. Feature & Business Rule Documentation
 
 ---
 
