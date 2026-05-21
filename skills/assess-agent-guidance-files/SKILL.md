@@ -13,6 +13,7 @@ Evaluate whether a repository’s `AGENTS.md` / `CLAUDE.md` files are:
 - Concise (≤150 lines ideal, ≤200 max)
 - Complete enough to guide an agent
 - Properly structured using **modular, linked documentation** where appropriate
+- Making the repo's **main features and business rules** discoverable through modular documentation referenced from the agent files
 
 This skill assesses **content quality and coverage**, not adherence to a specific file structure or naming convention.
 
@@ -194,6 +195,29 @@ Evaluation rules:
 
 ---
 
+### 9. Feature & Business Rule Documentation
+
+The repository should have **modular documentation** that describes its main features and the business rules that govern them, so an agent can understand *what the system does* and *which invariants matter* — not just the stack and architecture.
+
+- The agent file does **not** need to enumerate features inline. A single link to a discoverable docs location (e.g., `docs/features/`, `docs/domain/`, an ADR index, or equivalent) is sufficient.
+- "Main features" = the capabilities a user/consumer of the system relies on, not internal utilities. Examples:
+  - **Backend:** bounded contexts, use cases, domain workflows, key invariants
+  - **Frontend:** top-level user journeys / screens / flows
+  - **Mobile:** primary screens and flows, offline behavior, sync rules
+- "Business rules" = constraints that aren't obvious from the code's type signatures (eligibility, pricing, ordering, validation thresholds, state transitions, etc.)
+
+Important:
+- Do **not** require specific filenames or folder layouts
+- Accept any modular doc layout, as long as it is discoverable from the agent files
+
+Evaluation rules:
+- PASS: Modular feature docs exist AND the agent file links to them (directly or via a docs index)
+- WARN: Some features are documented but coverage is partial, OR docs exist but are not referenced from the agent files
+- FAIL: Repo has non-trivial business logic and no feature documentation, or feature docs exist but are not discoverable from the agent files
+- N/A: Repo is a thin library / SDK / CLI with no meaningful business logic — check skipped and excluded from scoring
+
+---
+
 ## Evaluation Output Format
 
 Verdict: PASS | PARTIAL PASS | FAIL  
@@ -230,6 +254,11 @@ Checks:
 8. Security & authentication
    - Status: PASS/WARN/FAIL
    - Missing: [...]
+
+9. Feature & business rule docs
+   - Status: PASS/WARN/FAIL/N/A
+   - Missing: [...]
+   - Notes: [...]
 
 ---
 
@@ -284,19 +313,44 @@ Do not depend on specific file names.
 
 ---
 
+### Infer Features (Stack-Aware + README Cross-Check)
+
+Goal: build a rough list of the repo's main features, then check whether they are documented and discoverable from the agent files.
+
+**Stack-aware signals to collect:**
+- Backend (DDD / hexagonal): top-level folders under `domain/`, `application/`, `use_cases/`, `features/`, aggregate roots, command/query handlers
+- Backend (layered): controller / router files, service classes, top-level endpoint groupings
+- Frontend (Next.js / React / Vue): top-level routes (`app/`, `pages/`, `src/routes/`), feature folders
+- Mobile (iOS / Android / RN / Flutter): screens, flows, navigation graphs, coordinator / router definitions
+
+**README cross-check:**
+- Parse the root `README.md` (and any top-level `OVERVIEW.md` / product doc) for feature-like headings or bullet lists ("Features", "What it does", "Capabilities")
+- Reconcile against the code-derived list:
+  - Features in README but not in code → stale README, but still counts as documented intent
+  - Features in code but not in README and not in modular docs → strong signal of undocumented features
+
+**Discoverability check:**
+- Verify that modular docs exist for the main features (any of: `docs/features/`, `docs/domain/`, `docs/use-cases/`, ADR directory, or feature-named markdown files anywhere under `docs/`)
+- Verify the agent file links to that location (direct path or via a referenced docs index)
+
+Only assert FAIL when business logic is clearly non-trivial. Thin libraries, SDKs, and pure CLIs with no domain logic get N/A.
+
+---
+
 ## Scoring Model
 
 | Area | Weight |
 |------|--------|
-| Structure & presence | 20 |
+| Structure & presence | 15 |
 | Length compliance | 10 |
-| Monorepo coverage | 15 |
+| Monorepo coverage | 10 |
 | Tech stack | 15 |
 | Architecture | 10 |
 | Performance | 10 |
 | Testing | 10 |
-| Docs | 5 |
+| Docs (API/events) | 5 |
 | Security & auth | 5 |
+| Feature & business rule docs | 10 |
 
 ### Verdict
 
@@ -314,6 +368,7 @@ Do not depend on specific file names.
 - No security/authentication guidance when clearly relevant
 - Monorepo with unclear or missing project coverage
 - Missing API/event documentation when clearly required
+- Non-trivial business logic with no modular feature/business-rule documentation, or feature docs that are not discoverable from the agent files
 
 ---
 
@@ -364,6 +419,17 @@ WARN: Architecture not clearly defined
 Suggested fix:
 - Add a short section describing the intended architecture and key patterns
 - Keep it high-level; detailed explanations can live elsewhere
+
+---
+
+### Missing Feature Documentation
+
+FAIL: Repo has clear business logic (e.g., use cases under `application/`) but no feature docs and no link from AGENTS.md
+
+Suggested fix:
+- Create `docs/features/` (or equivalent) with one short markdown per main feature — purpose, key business rules, links to relevant code/ADRs
+- Add a single line in AGENTS.md, e.g.: "Features and business rules: see `docs/features/`"
+- Do NOT inline feature descriptions in AGENTS.md
 
 ---
 
