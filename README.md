@@ -14,7 +14,7 @@ Learn more at [agentskills.io](https://agentskills.io/).
 
 A thoughtful skill to evaluate a repository’s agent readiness. It scans the repo’s AGENTS.md/CLAUDE.md files, along with any referenced guidance files, and provides an assessment across key areas, with practical recommendations for improvement.
 
-It also produces an overall repository rating for quick evaluation.
+It also creates or updates an `AGENTIC_READINESS_ASSESSMENT.md` artifact in the assessed repository root, using the required rating table and recommendation structure, and produces an overall repository rating for quick evaluation.
 
 **Installation:**
 
